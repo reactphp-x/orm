@@ -1,0 +1,12 @@
+{
+    "name":"wpjscc/reactphp-orm",
+    "require": {
+        "illuminate/database": "^9.52",
+        "react/mysql": "^0.6@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wpjscc\\React\\Orm\\": "src"
+        }
+    }
+}
