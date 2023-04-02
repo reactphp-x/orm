@@ -3,8 +3,7 @@
     "require": {
         "php": "^8.1",
         "illuminate/database": "^9.52",
-        "react/mysql": "^0.6@dev",
-        "wpjscc/reactphp-mysql-pool": "dev-master",
+        "wpjscc/reactphp-mysql-pool": "^1.0",
         "react/async": "^4 || ^3 || ^2"
     },
     "autoload": {

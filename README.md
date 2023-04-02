@@ -4,9 +4,7 @@
 ## install
 
 ```
-composer require react/mysql:^0.6@dev
-composer require illuminate/database:^9.52
-composer require wpjscc/reactphp-orm dev-master -vvv
+composer require wpjscc/reactphp-orm -vvv
 ```
 
 
