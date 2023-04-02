@@ -179,6 +179,6 @@ try{
 
 * [https://github.com/friends-of-reactphp/mysql](https://github.com/friends-of-reactphp/mysql)
 * [https://github.com/illuminate/database](https://github.com/illuminate/database)
-* [https://github.com/wpjscc/reactphp-mysql-pool][https://github.com/wpjscc/reactphp-mysql-pool]
+* [https://github.com/wpjscc/reactphp-mysql-pool](https://github.com/wpjscc/reactphp-mysql-pool)
 
 
