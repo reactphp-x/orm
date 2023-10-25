@@ -10,7 +10,7 @@ use React\EventLoop\Loop;
 $loop = Loop::get();
 
 
-$pool = new Pool('username:password@host/databasename', [
+$pool = new Pool(getenv('MYSQL_URI') ?:'username:password@host/databasename', [
     'max_connections' => 10, // 10 connection --default 10
     'max_wait_queue' => 110, // how many sql in queue --default 50
     'wait_timeout' => 5,// wait time include response time --default 0

@@ -93,56 +93,7 @@ class DB extends Capsule
 
     public static function translation(callable $callable)
     {
-
-        $deferred = new Deferred();
-        static::getReactConnection()->then(function ($connection) use ($callable, $deferred) {
-
-            DB::beginReact($connection)
-                ->then(function () use ($callable, $connection) {
-                    return \React\Async\async(function () use ($callable, $connection) {
-                        return $callable($connection);
-                    })();
-                })
-                ->then(function ($result) use ($connection, $deferred) {
-                    DB::commitReact($connection)->then(function () use ($result, $deferred, $connection) {
-                        DB::releaseConnection($connection);
-                        $deferred->resolve($result);
-                    }, function ($error) use ($deferred, $connection) {
-                        DB::releaseConnection($connection);
-                        $deferred->reject($error);
-                    })->otherwise(function ($error) {
-                        var_dump($error->getMessage());
-                    });
-                })->otherwise(function ($error) use ($connection, $deferred) {
-                    DB::rollbackReact($connection)->then(function () use ($error, $deferred, $connection) {
-                        DB::releaseConnection($connection);
-                        $deferred->reject($error);
-                    }, function ($error) use ($deferred, $connection) {
-                        DB::releaseConnection($connection);
-                        $deferred->reject($error);
-                    });
-                });
-                
-        }, function ($error) use ($deferred) {
-            $deferred->reject($error);
-        });
-
-        return $deferred->promise();
-
-    }
-
-
-
-    public static function getReactConnection()
-    {
-        return static::$pool->getIdleConnection();
-    }
-
-    public static function releaseConnection($connection)
-    {
-
-        static::$pool->releaseConnection($connection);
-
+       return static::$pool->translation($callable);
     }
 
 }
