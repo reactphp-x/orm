@@ -4,6 +4,7 @@ namespace Wpjscc\React\Orm;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Wpjscc\MySQL\Pool;
+use React\MySQL\QueryResult;
 
 class DB extends Capsule
 {
@@ -42,8 +43,6 @@ class DB extends Capsule
             $query->sql = $sql;
             $query->bindings = $bindings;
         });
-
-        static::extendReactConnection();
     }
 
     public static function listen($callback) 
@@ -58,16 +57,21 @@ class DB extends Capsule
         $sql = static::$query->sql;
         $bindings = static::$query->bindings;
 
-        if (!empty(static::$callbacks)) {
-            foreach (static::$callbacks as $callback) {
-                $callback($sql, $bindings);
-            }
-        }
 
         static::$query->sql = '';
         static::$query->bindings = [];
+        // 时间
+        $start = microtime(true);
 
-        return static::$pool->query($sql, $bindings);
+        return static::$pool->query($sql, $bindings)->then(function (QueryResult $command) use ($sql, $bindings, $start) {
+            $time = microtime(true) - $start;
+            if (!empty(static::$callbacks)) {
+                foreach (static::$callbacks as $callback) {
+                    $callback($sql, $bindings, $time);
+                }
+            }
+            return $command;
+        });
 
     }
 
@@ -79,7 +83,17 @@ class DB extends Capsule
         static::$query->sql = '';
         static::$query->bindings = [];
 
-        return $connection->query($sql, $bindings);
+        // 时间
+        $start = microtime(true);
+        return $connection->query($sql, $bindings)->then(function (QueryResult $command) use ($sql, $bindings, $start) {
+            $time = microtime(true) - $start;
+            if (!empty(static::$callbacks)) {
+                foreach (static::$callbacks as $callback) {
+                    $callback($sql, $bindings, $time);
+                }
+            }
+            return $command;
+        });
 
     }
 

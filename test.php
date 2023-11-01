@@ -18,6 +18,12 @@ $pool = new Pool(getenv('MYSQL_URI') ?:'username:password@host/databasename', [
 
 DB::init($pool);
 
+DB::listen(function ($sql, $bindings, $time) {
+    echo $sql . PHP_EOL;
+    echo json_encode($bindings) . PHP_EOL;
+    echo $time . PHP_EOL;
+});
+
 $table = 'blog_test';
 
 
