@@ -3,15 +3,14 @@
 namespace Wpjscc\React\Orm;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
-use React\Promise\PromiseInterface;
-use React\Promise\Deferred;
-use React\Promise\Timer\TimeoutException;
 use Wpjscc\MySQL\Pool;
 
 class DB extends Capsule
 {
     protected static $query;
     protected static $pool;
+
+    protected static $callbacks = [];
 
     public static function init(Pool $pool = null)
     {
@@ -47,22 +46,9 @@ class DB extends Capsule
         static::extendReactConnection();
     }
 
-    public static function extendReactConnection()
+    public static function listen($callback) 
     {
-
-        Capsule::macro('beginReact', function ($reactConnection) {
-            return $reactConnection->query('BEGIN');
-        });
-
-        Capsule::macro('commitReact', function ($reactConnection) {
-            return $reactConnection->query('COMMIT');
-        });
-
-        Capsule::macro('rollbackReact', function ($reactConnection) {
-            return $reactConnection->query('ROLLBACK');
-        });
-        
-       
+        static::$callbacks[] = $callback;
     }
 
 
@@ -71,6 +57,13 @@ class DB extends Capsule
     {
         $sql = static::$query->sql;
         $bindings = static::$query->bindings;
+
+        if (!empty(static::$callbacks)) {
+            foreach (static::$callbacks as $callback) {
+                $callback($sql, $bindings);
+            }
+        }
+
         static::$query->sql = '';
         static::$query->bindings = [];
 
