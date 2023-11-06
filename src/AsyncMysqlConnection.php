@@ -4,7 +4,6 @@ namespace Wpjscc\React\Orm;
 
 use Illuminate\Database\Connection;
 use Closure;
-use Illuminate\Database\Query\Processors\MySqlProcessor;
 use Illuminate\Database\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Illuminate\Filesystem\Filesystem;
 use PDOStatement;
@@ -70,7 +69,6 @@ class AsyncMysqlConnection extends Connection
      */
     public function getSchemaState(Filesystem $files = null, callable $processFactory = null)
     {
-        throw new \Exception("Not implemented");
         return new MySqlSchemaState($this, $files, $processFactory);
     }
 
