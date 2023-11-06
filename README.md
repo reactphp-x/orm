@@ -8,177 +8,108 @@ composer require wpjscc/reactphp-orm -vvv
 ```
 
 
-## example
+## init
 
 ```
-require './vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-use Wpjscc\React\Orm\DB;
-use Wpjscc\MySQL\Pool;
-use React\MySQL\QueryResult;
-use React\EventLoop\Loop;
+use Wpjscc\React\Orm\AsyncMysqlConnector;
+use Wpjscc\React\Orm\AsyncMysqlConnection;
+use Illuminate\Container\Container;
+use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Database\Connection;
 
-$loop = Loop::get();
+Connection::resolverFor('async-mysql', function ($connection, $database, $prefix, $config) {
+    return new AsyncMysqlConnection($connection, $database, $prefix, $config);
+});
+$container = new Container;
+$container->bind(AsyncMysqlConnector::class, fn () => new AsyncMysqlConnector);
+$container->alias(AsyncMysqlConnector::class, 'db.connector.async-mysql'); 
 
+$db = new DB($container);
 
-$pool = new Pool('username:password@host/databasename', [
-    'max_connections' => 1, // 10 connection --default 10
-    'max_wait_queue' => 110, // how many sql in queue --default 50
-    'wait_timeout' => 5,// wait time include response time --default 0
+$db->addConnection([
+    'driver' => 'async-mysql',
+    'host' => getenv('MYSQL_HOST') ?: '',
+    'database' => getenv('MYSQL_DATABASE') ?: '',
+    'username' => getenv('MYSQL_USER') ?: '',
+    'password' => getenv('MYSQL_PASSWORD') ?: '',
+    'charset' => 'utf8mb4',
+    'pool' => [
+        'min_connections' => 2, // min 2 connection
+        'max_connections' => 10, // max 10 connection
+        'max_wait_queue' => 110, // how many sql in queue
+        'wait_timeout' => 5,// wait time include response time
+        'keep_alive' => 10, // 
+    ]
 ]);
 
-DB::init($pool);
+$db->setAsGlobal();
+$db->bootEloquent();
+```
 
-$table = 'blog_test';
+## how to use 
 
-
-$queryResult = function (QueryResult $command) {
-    if (isset($command->resultRows)) {
-        // this is a response to a SELECT etc. with some rows (0+)
-        // print_r($command->resultFields);
-        print_r($command->resultRows);
-        echo count($command->resultRows) . ' row(s) in set' . PHP_EOL;
-    } else {
-        // this is an OK message in response to an UPDATE etc.
-        if ($command->insertId !== 0) {
-            echo 'last insert ID:'.$command->insertId.PHP_EOL;
-        }
-        echo 'Query OK, ' . $command->affectedRows . ' row(s) affected' . PHP_EOL;
-    }
-};
+sync 使用 和 laravel 一样，可以参考 laravel 文档
 
 
-# create
-DB::execute(
-    DB::table($table)->insert([
-        [
-            'content' => 'hello world'
-        ],
-        [
-            'content' => 'hello world'
-        ]
-    ])
-)->then($queryResult);
+async 使用
 
-# select
-DB::execute(
-    DB::table($table)->first()
-)->then($queryResult);
+```php
 
-# update
-DB::execute(
-    DB::table($table)->first()
-)->then($queryResult);
+DB::enableQueryLog();
 
-# delete
-DB::execute(
-    DB::table($table)
-    ->where('id', 1)->delete()
-)->then($queryResult);
+$promises = [];
 
-# upsert
-DB::execute(
-    DB::table($table)
-    ->upsert([
-        'id' => 2,
-        'content' => 'hello world2'
-    ], [
-        'id'
-    ], [
-        'content'
-    ])
-)->then($queryResult);
+for ($i=0; $i < 10; $i++) { 
+    $a = \React\Async\async(fn() => User::with('posts.comments', 'posts.tags')->get()->each(function ($user) {
+        echo $user->name . PHP_EOL;
+        $user->posts->each(function ($post) {
+            echo $post->title . PHP_EOL;
+            $post->comments->each(function ($comment) {
+                echo $comment->content . PHP_EOL;
+            });
+        });
+    }))();
 
-
-# translation
-DB::translation(function ($connection) use ($queryResult, $table) {
-
-    $insert1 = \React\Async\await(DB::executeTL(DB::table($table)->insert([
-        'content' => 'hi1'
-    ]), $connection));
-    $queryResult($insert1);
-
-    $insert2 = \React\Async\await(DB::executeTL(DB::table($table)->insert([
-        'content' => 'hi2'
-    ]), $connection));
-
-    $queryResult($insert2);
+    $promises[] = $a;
     
-    return [
-        (array) $insert1,
-        (array) $insert2,
-    ];
-   
-})->then(function ($res) {
-    var_dump($res,'suuccess');
-}, function ($error) {
-    var_dump($error->getMessage(), 'i');
-});
-
-
-# translation-fail
-DB::translation(function ($connection) use ($table) {
-
-    \React\Async\await(DB::executeTL(DB::table($table)->insert([
-        'content' => 'hi3'
-    ]), $connection));
-
-    throw new \Exception("Error Processing Request");
     
-})->then(function ($res) {
-    var_dump($res,'fail');
-}, function ($error) {
-    var_dump($error->getMessage(), 'fail');
-});
+    $b = \React\Async\async(fn() => Post::with('user', 'comments', 'tags')->get()->each(function ($post) {
+        echo $post->title . PHP_EOL;
+        echo $post->user->name . PHP_EOL;
+        $post->comments->each(function ($comment) {
+            echo $comment->content . PHP_EOL;
+        });
+        $post->tags->each(function ($tag) {
+            echo $tag->name . PHP_EOL;
+        });
+    }))();
 
+    $promises[] = $b;
+    
+}
 
-
-$loop->addPeriodicTimer(2, function () {
-    echo "hello world\n";
+\React\Promise\all($promises)->then(function () {
+    print_r(DB::getQueryLog());
 });
 
 ```
+
 
 ## notice
 
-* only support single sql
-* updateOrInsert not support
-```
-try{
-    $first = React\Async\await(DB::execute(DB::table('blog_test')->where('id', 1)->first())->resultRows[0] ?? null;
-
-    if ($first) {
-        // todo update
-    } else {
-        // todo create
-    }
-} catch (Throwable $e) {
-    // promise rejected with $e
-    echo 'Error: ' . $e->getMessage();
-}
-
-or use upsert (need unique index or primary key)
-try{
-    $command = React\Async\await(DB::execute(DB::table('blog_test')->upsert([
-        'id'=>1,
-        'name' => 'hello world'
-    ], [
-        'id'
-    ], [
-        'name'
-    ])));
-} catch (Throwable $e) {
-    // promise rejected with $e
-    echo 'Error: ' . $e->getMessage();
-}
-
+transaction only support closure, 
 
 ```
+DB::transaction(function ($db) {
+    // use $db not use DB
+    $db->table('test_users')->insert([
+        'name' => 'test-success',
+    ]);
+});
+```
 
-## ref
+## License
 
-* [https://github.com/friends-of-reactphp/mysql](https://github.com/friends-of-reactphp/mysql)
-* [https://github.com/illuminate/database](https://github.com/illuminate/database)
-* [https://github.com/wpjscc/reactphp-mysql-pool](https://github.com/wpjscc/reactphp-mysql-pool)
-
-
+MTT
