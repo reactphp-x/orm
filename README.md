@@ -99,7 +99,7 @@ for ($i=0; $i < 10; $i++) {
 
 ## notice
 
-transaction only support closure, 
+transaction only support closure
 
 ```
 DB::transaction(function ($db) {
@@ -112,4 +112,4 @@ DB::transaction(function ($db) {
 
 ## License
 
-MTT
+MIT
