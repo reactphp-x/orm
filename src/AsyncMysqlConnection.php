@@ -21,7 +21,9 @@ class AsyncMysqlConnection extends Connection
      */
     public function isMaria()
     {
-        throw new \Exception("Not implemented");
+        $command = \React\Async\await($this->getPdo()->query("select version()"));
+        $version = $command->resultRows[0]['version()'] ?? '';
+        return str_contains($version, 'MariaDB');
     }
 
     /**
