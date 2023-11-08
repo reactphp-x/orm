@@ -1,5 +1,14 @@
 {
     "name":"wpjscc/reactphp-orm",
+    "description": "A database OMR for ReactPHP based on illuminate/database and react/mysql packages",
+    "keywords": ["reactphp", "react", "mysql", "orm", "database", "illuminate"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wpjscc",
+            "email": "wpjscc@gmail.com"
+        }
+    ],
     "require": {
         "php": "^8.1",
         "wpjscc/reactphp-mysql-pool": "^1.0",
