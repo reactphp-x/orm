@@ -99,16 +99,44 @@ for ($i=0; $i < 10; $i++) {
 
 ## notice
 
-transaction only support closure
+transaction only support DB not support Model
 
 ```
 DB::transaction(function ($db) {
-    // use $db not use DB
+    // importrant use $db not use DB
     $db->table('test_users')->insert([
         'name' => 'test-success',
     ]);
 });
+
+
+// or 
+
+$db = DB::beginTransaction();
+
+try {
+    $db->table('test_users')->insert([
+        'name' => 'test-failed',
+    ]);
+    $db->table('test_users')->insert([
+        'name44' => 'test',
+    ]);
+    $db->commit();
+} catch (\Throwable $e) {
+    $db->rollBack();
+    var_dump($e->getMessage());
+}
+
 ```
+
+Recommended use `DB::transaction`
+
+
+again notice
+
+> 1. transaction only support DB not support Model
+
+
 
 ## License
 

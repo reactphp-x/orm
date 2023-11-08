@@ -10,6 +10,7 @@ use PDOStatement;
 use Illuminate\Database\Schema\MySqlBuilder;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar as SchemaGrammar;
 use Illuminate\Database\Schema\MySqlSchemaState;
+use Illuminate\Database\Capsule\Manager as DB;
 
 class AsyncMysqlConnection extends Connection
 {
@@ -318,6 +319,66 @@ class AsyncMysqlConnection extends Connection
             }
             throw $e;
         });
+    }
+
+    /**
+     * Start a new database transaction.
+     *
+     * @return self
+     *
+     * @throws \Throwable
+     */
+    public function beginTransaction()
+    {
+
+        if (!$this->getPdo()) {
+            throw new \React\Mysql\Exception("no connection");
+        }
+
+        if (!($this->getPdo() instanceof \Wpjscc\MySQL\Pool)) {
+            throw new \React\Mysql\Exception("had in transaction");
+        }
+
+        $connection = \React\Async\await($this->getPdo()->getIdleConnection());
+        \React\Async\await($connection->query('BEGIN'));
+        $db = clone $this;
+        $db->setPdo($connection);
+
+        $this->fireConnectionEvent('beganTransaction');
+
+        return $db;
+    }
+
+    public function commit()
+    {
+        if ($this->getPdo() && !($this->getPdo() instanceof \Wpjscc\MySQL\Pool)) {
+            \React\Async\await($this->getPdo()->query('COMMIT'));
+            var_dump('commit');
+            DB::getPdo()->releaseConnection($this->getPdo());
+        } else {
+            return;
+        }
+        $this->fireConnectionEvent('committed');
+
+    }
+
+    /**
+     * Rollback the active database transaction.
+     *
+     * @param  int|null  $toLevel
+     * @return void
+     *
+     * @throws \Throwable
+     */
+    public function rollBack($toLevel = null)
+    {
+       if ($this->getPdo() && !($this->getPdo() instanceof \Wpjscc\MySQL\Pool)) {
+            \React\Async\await($this->getPdo()->query('ROLLBACK'));
+            DB::getPdo()->releaseConnection($this->getPdo());
+        } else {
+            return;
+        }
+        $this->fireConnectionEvent('rollingBack');
     }
 
 
