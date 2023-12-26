@@ -31,6 +31,7 @@ $db = new DB($container);
 $db->addConnection([
     'driver' => 'async-mysql',
     'host' => getenv('MYSQL_HOST') ?: '',
+    'port' => getenv('MYSQL_PORT') ?: '',
     'database' => getenv('MYSQL_DATABASE') ?: '',
     'username' => getenv('MYSQL_USER') ?: '',
     'password' => getenv('MYSQL_PASSWORD') ?: '',
