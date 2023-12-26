@@ -4,7 +4,7 @@
 ## install
 
 ```
-composer require wpjscc/reactphp-orm -vvv
+composer require reactphp-framework/orm -vvv
 ```
 
 
@@ -13,8 +13,8 @@ composer require wpjscc/reactphp-orm -vvv
 ```
 require __DIR__.'/vendor/autoload.php';
 
-use Wpjscc\React\Orm\AsyncMysqlConnector;
-use Wpjscc\React\Orm\AsyncMysqlConnection;
+use Reactphp\Framework\Orm\AsyncMysqlConnector;
+use Reactphp\Framework\Orm\AsyncMysqlConnection;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Connection;

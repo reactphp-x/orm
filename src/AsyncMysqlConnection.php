@@ -1,6 +1,6 @@
 <?php
 
-namespace Wpjscc\React\Orm;
+namespace Reactphp\Framework\Orm;
 
 use Illuminate\Database\Connection;
 use Closure;
@@ -176,7 +176,7 @@ class AsyncMysqlConnection extends Connection
      * Get the PDO connection to use for a select query.
      *
      * @param  bool  $useReadPdo
-     * @return \Wpjscc\MySQL\Pool;
+     * @return \Reactphp\Framework\MySQL\Pool;
      */
     protected function getPdoForSelect($useReadPdo = true)
     {
@@ -332,11 +332,11 @@ class AsyncMysqlConnection extends Connection
     {
 
         if (!$this->getPdo()) {
-            throw new \React\Mysql\Exception("no connection");
+            throw new Exception("no connection");
         }
 
-        if (!($this->getPdo() instanceof \Wpjscc\MySQL\Pool)) {
-            throw new \React\Mysql\Exception("had in transaction");
+        if (!($this->getPdo() instanceof \Reactphp\Framework\MySQL\Pool)) {
+            throw new Exception("had in transaction");
         }
 
         $connection = \React\Async\await($this->getPdo()->getIdleConnection());
@@ -351,9 +351,8 @@ class AsyncMysqlConnection extends Connection
 
     public function commit()
     {
-        if ($this->getPdo() && !($this->getPdo() instanceof \Wpjscc\MySQL\Pool)) {
+        if ($this->getPdo() && !($this->getPdo() instanceof \Reactphp\Framework\MySQL\Pool)) {
             \React\Async\await($this->getPdo()->query('COMMIT'));
-            var_dump('commit');
             DB::getPdo()->releaseConnection($this->getPdo());
         } else {
             return;
@@ -372,7 +371,7 @@ class AsyncMysqlConnection extends Connection
      */
     public function rollBack($toLevel = null)
     {
-       if ($this->getPdo() && !($this->getPdo() instanceof \Wpjscc\MySQL\Pool)) {
+       if ($this->getPdo() && !($this->getPdo() instanceof \Reactphp\Framework\MySQL\Pool)) {
             \React\Async\await($this->getPdo()->query('ROLLBACK'));
             DB::getPdo()->releaseConnection($this->getPdo());
         } else {

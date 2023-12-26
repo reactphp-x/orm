@@ -2,8 +2,8 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Wpjscc\React\Orm\AsyncMysqlConnector;
-use Wpjscc\React\Orm\AsyncMysqlConnection;
+use Reactphp\Framework\Orm\AsyncMysqlConnector;
+use Reactphp\Framework\Orm\AsyncMysqlConnection;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Connection;
@@ -20,6 +20,7 @@ $db = new DB($container);
 $db->addConnection([
     'driver' => 'async-mysql',
     'host' => getenv('MYSQL_HOST') ?: '',
+    'port' => getenv('MYSQL_PORT') ?: '3306',
     'database' => getenv('MYSQL_DATABASE') ?: '',
     'username' => getenv('MYSQL_USER') ?: '',
     'password' => getenv('MYSQL_PASSWORD') ?: '',

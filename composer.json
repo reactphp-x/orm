@@ -1,5 +1,5 @@
 {
-    "name":"wpjscc/reactphp-orm",
+    "name":"reactphp-framework/orm",
     "description": "A database OMR for ReactPHP based on illuminate/database and react/mysql packages",
     "keywords": ["reactphp", "react", "mysql", "orm", "database", "illuminate"],
     "license": "MIT",
@@ -11,13 +11,13 @@
     ],
     "require": {
         "php": "^8.1",
-        "wpjscc/reactphp-mysql-pool": "^1.0",
+        "reactphp-framework/mysql-pool": "^1.0",
         "react/async": "^4 || ^3 || ^2",
         "illuminate/database": "^10.31"
     },
     "autoload": {
         "psr-4": {
-            "Wpjscc\\React\\Orm\\": "src"
+            "Reactphp\\Framework\\Orm\\": "src"
         }
     }
 }
