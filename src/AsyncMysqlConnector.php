@@ -1,8 +1,8 @@
 <?php
 
-namespace Reactphp\Framework\Orm;
+namespace ReactphpX\Orm;
 
-use Reactphp\Framework\MySQL\Pool;
+use ReactphpX\MySQL\Pool;
 use Illuminate\Database\Connectors\ConnectorInterface;
 
 class AsyncMysqlConnector implements ConnectorInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace Reactphp\Framework\Orm;
+namespace ReactphpX\Orm;
 
 class Exception extends \Exception
 {

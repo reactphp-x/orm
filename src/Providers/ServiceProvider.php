@@ -1,11 +1,11 @@
 <?php
 
-namespace Reactphp\Framework\Orm\Providers;
+namespace ReactphpX\Orm\Providers;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Illuminate\Database\Connection;
-use Reactphp\Framework\Orm\AsyncMysqlConnection;
-use Reactphp\Framework\Orm\AsyncMysqlConnector;
+use ReactphpX\Orm\AsyncMysqlConnection;
+use ReactphpX\Orm\AsyncMysqlConnector;
 
 class ServiceProvider extends BaseServiceProvider
 {

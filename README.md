@@ -4,7 +4,7 @@
 ## install
 
 ```
-composer require reactphp-framework/orm -vvv
+composer require reactphp-x/orm -vvv
 ```
 
 
@@ -13,8 +13,8 @@ composer require reactphp-framework/orm -vvv
 ```
 require __DIR__.'/vendor/autoload.php';
 
-use Reactphp\Framework\Orm\AsyncMysqlConnector;
-use Reactphp\Framework\Orm\AsyncMysqlConnection;
+use ReactphpX\Orm\AsyncMysqlConnector;
+use ReactphpX\Orm\AsyncMysqlConnection;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Connection;

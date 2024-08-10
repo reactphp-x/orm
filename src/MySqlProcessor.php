@@ -1,6 +1,6 @@
 <?php
 
-namespace Reactphp\Framework\Orm;
+namespace ReactphpX\Orm;
 
 use Illuminate\Database\Query\Processors\MySqlProcessor as BaseMySqlProcessor;
 use Illuminate\Database\Query\Builder;
