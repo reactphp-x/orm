@@ -339,7 +339,7 @@ class AsyncMysqlConnection extends Connection
             throw new Exception("had in transaction");
         }
 
-        $connection = \React\Async\await($this->getPdo()->getIdleConnection());
+        $connection = \React\Async\await($this->getPdo()->getConnection());
         \React\Async\await($connection->query('BEGIN'));
         $db = clone $this;
         $db->setPdo($connection);

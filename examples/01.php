@@ -31,7 +31,7 @@ Post::with('user', 'comments', 'tags')->get()->each(function ($post) {
 });
 
 print_r(DB::getQueryLog());
-DB::disconnect();
+// DB::disconnect();
 
 
 

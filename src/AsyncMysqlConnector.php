@@ -28,8 +28,11 @@ class AsyncMysqlConnector implements ConnectorInterface
         $database = $config['database'];
 
         return static::$pool = new Pool(
-            $username . ':' . $password . '@' . $host . '/' . $database . '?charset=' . $charset,
-            $config['pool'] ?? []
+            $username . ':' . $password . '@' . $host . '/' . $database . '?charset=' . $charset.'&idle='.($config['idle'] ?? 30),
+            $config['pool']['min_connections'] ?? 1,
+            $config['pool']['max_connections'] ?? 10,
+            $config['pool']['max_wait_queue'] ?? 500,
+            $config['pool']['wait_timeout'] ?? 0,
         );
     }
 }
