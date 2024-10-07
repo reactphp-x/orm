@@ -41,7 +41,7 @@ $db->addConnection([
         'max_connections' => 10, // max 10 connection
         'max_wait_queue' => 110, // how many sql in queue
         'wait_timeout' => 5,// wait time include response time
-        'keep_alive' => 10, // 
+        'idle' => 60, // 
     ]
 ]);
 
