@@ -22,8 +22,8 @@ try {
 // true
 var_dump(DB::table('test_users')->where('name', 'test-failed')->count() === 0);
 
-echo 'pool_count:'. DB::getPdo()->getPoolCount() . PHP_EOL;
-echo 'idleConnectionCount:'. DB::getPdo()->idleConnectionCount() . PHP_EOL;
+// echo 'pool_count:'. DB::getPdo()->getPoolCount() . PHP_EOL;
+// echo 'idleConnectionCount:'. DB::getPdo()->idleConnectionCount() . PHP_EOL;
 
 // success
 DB::table('test_users')->where('name', 'test-success')->delete();
@@ -40,8 +40,8 @@ try {
 // true
 var_dump(DB::table('test_users')->where('name', 'test-success')->count() === 1);
 
-echo 'pool_count:'. DB::getPdo()->getPoolCount() . PHP_EOL;
-echo 'idleConnectionCount:'. DB::getPdo()->idleConnectionCount() . PHP_EOL;
+// echo 'pool_count:'. DB::getPdo()->getPoolCount() . PHP_EOL;
+// echo 'idleConnectionCount:'. DB::getPdo()->idleConnectionCount() . PHP_EOL;
 
 
 DB::disconnect();
