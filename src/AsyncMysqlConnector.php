@@ -8,13 +8,13 @@ use Illuminate\Database\Connectors\ConnectorInterface;
 class AsyncMysqlConnector implements ConnectorInterface
 {
 
-    protected static $pool;
+    protected static $connectToPoll;
 
     public function connect($config)
     {
 
-        if (static::$pool) {
-            return static::$pool;
+        if (isset(static::$connectToPoll[$config['name']])) {
+            return static::$connectToPoll[$config['name']];
         }
 
         $username = $config['username'];
@@ -27,7 +27,7 @@ class AsyncMysqlConnector implements ConnectorInterface
         }
         $database = $config['database'];
 
-        return static::$pool = new Pool(
+        return static::$connectToPoll[$config['name']] = new Pool(
             $username . ':' . $password . '@' . $host . '/' . $database . '?charset=' . $charset.'&idle='.($config['idle'] ?? 30),
             $config['pool']['min_connections'] ?? 1,
             $config['pool']['max_connections'] ?? 10,
